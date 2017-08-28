@@ -34,7 +34,7 @@ github-token:
 
 
 prestissimo:
-	@composer global require hirak/prestissimo
+	@composer global require "fxp/composer-asset-plugin" "hirak/prestissimo"
 
 project-create:
 	@echo 'Criando projeto...'
