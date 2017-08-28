@@ -3,9 +3,9 @@ return [
     'components' => [
         'db' => [
             'class' => 'yii\db\Connection',
-            'dsn' => 'mysql:host=' . getenv('APP_MYSQL_HOST') . 'dbname=' . getenv('APP_MYSQL_DBNAME'),
-            'username' => 'dbname=' . getenv('APP_MYSQL_USERNAME'),
-            'password' => getenv('APP_MYSQL_PASSWORD'),
+            'dsn' => 'mysql:host=mariadb;dbname=yii2advanced',
+            'username' => 'root',
+            'password' => 'admin',
             'charset' => 'utf8',
         ],
         'mailer' => [

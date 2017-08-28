@@ -25,7 +25,9 @@ chromedriver:
 	cd bin && ./chromedriver --url-base=/wd/hub
 
 database-create:
-	@mysql -u root -padmin -h mariadb -e "CREATE DATABASE IF NOT EXISTS " . $$APP_DATABASE_NAME
+	@Criando banco de dados...
+	@mysql -u root -padmin -h mariadb -e "DROP DATABASE IF EXISTS yii2advanced"
+	@mysql -u root -padmin -h mariadb -e "CREATE DATABASE IF NOT EXISTS yii2advanced"
 
 github-token:
 	@composer config -g github-oauth.github.com $$GITHUB_TOKEN
@@ -36,7 +38,7 @@ project-create:
 
 project-init-dev:
 	@echo 'Inicializando projeto em modo DEV...'
-	@cd src && ./init --env=Development --overwrite=All
+	@cd src && ./init --env=Development --overwrite=no
 
 project-migrate:
 	@cd src && ./yii migrate
@@ -58,7 +60,7 @@ clean:
 	@echo 'Limpando pasta SRC/'
 	@rm -rf src/
 
-build: clean github-token project-create project-config project-init-dev docker-compose-up
+build: clean github-token project-create project-config project-init-dev project-migrate docker-compose-up
 	@echo 'what is build?'
 
 docker-compose-up:

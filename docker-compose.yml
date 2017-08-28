@@ -9,7 +9,7 @@ services:
       - mariadb
     volumes:
       - ~/.composer/cache:/root/.composer/cache
-      - ./src/:/var/www/html/src
+      - ./:/var/www/html
       - ./conf/php/php.ini:/usr/local/etc/php/php.ini
       - ./conf/php/docker-php-ext-xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
       - ./conf/php/docker-php-ext-sendmail.ini:/usr/local/etc/php/conf.d/docker-php-ext-sendmail.ini
