@@ -25,16 +25,12 @@ chromedriver:
 	cd bin && ./chromedriver --url-base=/wd/hub
 
 database-create:
-	@Criando banco de dados...
-	@mysql -u root -padmin -h mariadb -e "DROP DATABASE IF EXISTS yii2advanced"
-	@mysql -u root -padmin -h mariadb -e "CREATE DATABASE IF NOT EXISTS yii2advanced"
+	@echo 'Criando banco de dados...'
+	@mysql -u $$APP_MYSQL_USERNAME --password=$$APP_MYSQL_PASSWORD -h $$APP_MYSQL_HOST -e "CREATE DATABASE IF NOT EXISTS $$APP_MYSQL_DBNAME"  -vvv
 
 github-token:
+	@echo 'Github Token:' $$GITHUB_TOKEN
 	@composer config -g github-oauth.github.com $$GITHUB_TOKEN
-
-
-prestissimo:
-	@composer global require "fxp/composer-asset-plugin" "hirak/prestissimo" --no-progress
 
 project-create:
 	@echo 'Criando projeto...'
@@ -45,9 +41,9 @@ project-init-dev:
 	@cd src && ./init --env=Development --overwrite=no
 
 project-migrate:
-	@cd src && ./yii migrate
+	@cd src && ./yii migrate --interactive=0
 
-test: setup
+project-test:
 	@echo 'run tests'
 
 emoji:
@@ -63,8 +59,10 @@ project-config:
 clean:
 	@echo 'Limpando pasta SRC/'
 	@rm -rf src/
+	@echo 'Removendo banco de dados'
+	@mysql -u root -padmin -h mariadb -e "DROP DATABASE IF EXISTS yii2advanced" -vvv
 
-build: clean prestissimo github-token project-create project-config project-init-dev database-create project-migrate docker-compose-up
+build: clean github-token project-create project-config project-init-dev database-create project-migrate project-test
 	@echo 'what is build?'
 
 docker-compose-up:

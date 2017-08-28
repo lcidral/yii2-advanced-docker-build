@@ -1,5 +1,12 @@
 # yii2-advanced-docker-build
 
+#execute
+```
+$ docker-compose up -d
+$ make build
+```
+
+#environment
 ```
 export GITHUB_TOKEN=YOUR_TOKEN
 export APP_MYSQL_HOST=mariadb
