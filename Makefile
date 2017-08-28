@@ -32,6 +32,10 @@ database-create:
 github-token:
 	@composer config -g github-oauth.github.com $$GITHUB_TOKEN
 
+
+prestissimo:
+	@composer global require hirak/prestissimo
+
 project-create:
 	@echo 'Criando projeto...'
 	@composer create-project --prefer-dist yiisoft/yii2-app-advanced src
@@ -60,7 +64,7 @@ clean:
 	@echo 'Limpando pasta SRC/'
 	@rm -rf src/
 
-build: clean github-token project-create project-config project-init-dev project-migrate docker-compose-up
+build: clean prestissimo github-token project-create project-config project-init-dev database-create project-migrate docker-compose-up
 	@echo 'what is build?'
 
 docker-compose-up:
