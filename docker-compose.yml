@@ -20,6 +20,7 @@ services:
       APP_MYSQL_DBNAME: 'yii2advanced'
       APP_MYSQL_USERNAME: 'root'
       APP_MYSQL_PASSWORD: 'admin'
+      GITHUB_TOKEN: '$GITHUB_TOKEN'
 
   nginx:
     container_name: nginx

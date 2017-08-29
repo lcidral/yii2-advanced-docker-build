@@ -6,7 +6,7 @@ return [
             'dsn' => 'mysql:host=mariadb;dbname=yii2advanced',
             'username' => 'root',
             'password' => 'admin',
-            'charset' => 'utf8',
+            'charset' => 'utf8'
         ],
         'mailer' => [
             'class' => 'yii\swiftmailer\Mailer',
