@@ -14,8 +14,6 @@ RUN apk --update add \
         bash \
         bash-completion \
         freetype-dev \
-        openssl \
-        ca-certificates \
         icu \
         ssmtp \
         icu-dev \
@@ -26,8 +24,7 @@ RUN apk --update add \
         libjpeg-turbo-dev \
         libpng-dev \
         mysql-client \
-        nodejs \
-        postgresql-dev && \
+        nodejs && \
     docker-php-ext-configure gd \
         --with-gd \
         --with-freetype-dir=/usr/include/ \
@@ -45,8 +42,7 @@ RUN apk --update add \
         intl \
         mbstring \
         opcache \
-        pdo_mysql \
-        pdo_pgsql && \
+        pdo_mysql && \
     apk del \
         icu-dev \
         gcc \

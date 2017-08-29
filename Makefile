@@ -25,7 +25,7 @@ selenium:
 chromedriver:
 	cd bin && ./chromedriver --url-base=/wd/hub
 
-database-create:
+database:
 	@echo 'Criando banco de dados...'
 	@mysql -u $$APP_MYSQL_USERNAME --password=$$APP_MYSQL_PASSWORD -h $$APP_MYSQL_HOST -e "CREATE DATABASE IF NOT EXISTS $$APP_MYSQL_DBNAME" -vvv
 
@@ -33,20 +33,20 @@ github-token:
 	@echo 'Github Token:' $$GITHUB_TOKEN
 	@composer config -g github-oauth.github.com $$GITHUB_TOKEN
 
-project-create:
+create:
 	@echo 'Criando projeto...'
 	@composer self-update && composer --version
 	@composer global require "fxp/composer-asset-plugin" "hirak/prestissimo"
 	@composer create-project --prefer-dist $(REPO) src
 
-project-init-dev:
+init:
 	@echo 'Inicializando projeto em modo DEV...'
 	@cd src && ./init --env=Development --overwrite=no
 
-project-migrate:
+migrate:
 	@cd src && ./yii migrate --interactive=0
 
-project-test:
+test:
 	@echo 'Executando testes'
 	@cd src/ && composer validate --strict
 	@cd src/ && composer update --prefer-dist --no-interaction
@@ -60,7 +60,7 @@ emoji:
 mailcatcher-test:
 	@php -r 'mail("local@alpine.php","Testing php -v ".phpversion(),"php on ".gethostname());'
 
-project-config:
+config:
 	@echo 'Copiando configurações'
 	@cp -R conf/app/* src/
 
@@ -70,9 +70,5 @@ clean:
 	@echo 'Removendo banco de dados'
 	@mysql -u $$APP_MYSQL_USERNAME  --password=$$APP_MYSQL_PASSWORD -h $$APP_MYSQL_HOST -e "DROP DATABASE IF EXISTS $$APP_MYSQL_DBNAME" -vvv
 
-build: clean github-token project-create project-config project-init-dev database-create project-migrate project-test
-	@echo 'what is build?'
-
-docker-compose-up:
-	@echo 'Subindo containeres...'
-	@docker-compose up -d --force-recreate
+build: clean github-token create config init database migrate test
+	@echo 'this message not printed by segmentation fault... :o['
