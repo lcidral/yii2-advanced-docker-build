@@ -1,8 +1,16 @@
 version: '2.1'
 services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+
   php:
     container_name: php
-    image: lcidral/yii2.php:7.0.22-fpm-alpine
+    image: lcidral/yii2.php:7.1.8-fpm-alpine
     restart: always
     links:
       - mail
@@ -15,27 +23,43 @@ services:
       - ./conf/php/docker-php-ext-sendmail.ini:/usr/local/etc/php/conf.d/docker-php-ext-sendmail.ini
       - ./conf/php/ssmtp.conf:/etc/ssmtp/ssmtp.conf
     environment:
-      TAG: '1.0.0'
       APP_MYSQL_HOST: 'mariadb'
       APP_MYSQL_DBNAME: 'yii2advanced'
       APP_MYSQL_USERNAME: 'root'
       APP_MYSQL_PASSWORD: 'admin'
       GITHUB_TOKEN: '$GITHUB_TOKEN'
 
-  nginx:
-    container_name: nginx
+  frontend:
+    container_name: frontend
     image: nginx:1.13.3-alpine
     restart: always
     ports:
-      - "80:80"
-      - "8081:8080"
+      - "8080:80"
     depends_on:
       - php
     volumes_from:
       - php
     volumes:
-      - ./conf/nginx/conf:/etc/nginx/conf.d
+      - ./conf/nginx/conf/nginx.frontend.conf:/etc/nginx/conf.d/nginx.conf
       - ./conf/nginx/logs:/var/log/nginx
+    environment:
+      VIRTUAL_HOST: 'frontend.dev'
+
+  backend:
+    container_name: backend
+    image: nginx:1.13.3-alpine
+    restart: always
+    ports:
+      - "8081:80"
+    depends_on:
+      - php
+    volumes_from:
+      - php
+    volumes:
+      - ./conf/nginx/conf/nginx.backend.conf:/etc/nginx/conf.d/nginx.conf
+      - ./conf/nginx/logs:/var/log/nginx
+    environment:
+      VIRTUAL_HOST: 'backend.dev'
 
   mail:
     container_name: mail

@@ -1,5 +1,5 @@
 NAME = lcidral/yii2.php
-VERSION = 7.0.22-fpm-alpine
+VERSION = 7.1.8-fpm-alpine
 REPO = yiisoft/yii2-app-advanced
 
 .PHONY: all build push tag_latest release selenium chromedriver

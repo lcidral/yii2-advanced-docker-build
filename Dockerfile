@@ -1,4 +1,4 @@
-FROM php:7.0.22-fpm-alpine
+FROM php:7.1.8-fpm-alpine
 
 MAINTAINER lcidral <lcidral@gmail.com>
 
@@ -9,7 +9,6 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN apk --update add \
         git \
         curl \
-        collectd \
         curl-dev \
         bash \
         bash-completion \
