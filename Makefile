@@ -37,13 +37,13 @@ database:
 
 github-token:
 	@echo 'Github Token:' $$GITHUB_TOKEN
-	@composer config -g github-oauth.github.com $$GITHUB_TOKEN
+	@php ../composer.phar config -g github-oauth.github.com $$GITHUB_TOKEN
 
 create:
 	@echo 'Criando projeto...'
-	@composer self-update && composer --version
-	@composer global require "fxp/composer-asset-plugin" "hirak/prestissimo"
-	@composer create-project --prefer-dist $(REPO) src
+	@php ../composer.phar self-update && php ../composer.phar --version
+	@php ../composer.phar global require "fxp/php composer-asset-plugin" "hirak/prestissimo"
+	@php ../composer.phar create-project --prefer-dist $(REPO) src
 
 init:
 	@echo 'Inicializando projeto em modo DEV...'
@@ -54,8 +54,8 @@ migrate:
 
 test:
 	@echo 'Executando testes'
-	@cd src/ && composer validate --strict
-	@cd src/ && composer update --prefer-dist --no-interaction
+	@cd src/ && php ../composer.phar validate --strict
+	@cd src/ && php ../composer.phar update --prefer-dist --no-interaction
 	@cd src/ && php yii_test migrate --interactive=0
 	@cd src/ && vendor/bin/codecept build
 	@cd src/ && vendor/bin/codecept run
