@@ -6,6 +6,9 @@ REPO = yiisoft/yii2-app-advanced
 
 all: build
 
+docker:
+	@docker exec -it php bash
+
 docker-build:
 	@docker build -t $(NAME):$(VERSION) .
 
@@ -17,6 +20,8 @@ composer:
 	@php -r "if (hash_file('SHA384', 'composer-setup.php') === '669656bab3166a7aff8a7506b8cb2d1c292f042046c5a994c43155c0be6190fa0355160742ab2e1c88d40d5be660b410') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
 	@php composer-setup.php
 	@php -r "unlink('composer-setup.php');"
+	@chmod +X composer.phar
+	@mv composer.phar /usr/local/bin/composer
 
 docker-release: tag_latest
 	@if ! docker images $(NAME) | awk '{ print $$2 }' | grep -q -F $(VERSION); then echo "$(NAME) version $(VERSION) is not yet built. Please run 'make docker-build'"; false; fi
@@ -37,13 +42,13 @@ database:
 
 github-token:
 	@echo 'Github Token:' $$GITHUB_TOKEN
-	@php ../composer.phar config -g github-oauth.github.com $$GITHUB_TOKEN
+	@composer config -g github-oauth.github.com $$GITHUB_TOKEN
 
 create:
 	@echo 'Criando projeto...'
-	@php ../composer.phar self-update && php ../composer.phar --version
-	@php ../composer.phar global require "fxp/php composer-asset-plugin" "hirak/prestissimo"
-	@php ../composer.phar create-project --prefer-dist $(REPO) src
+	@composer self-update && composer --version
+	@composer global require "fxp/php composer-asset-plugin" "hirak/prestissimo"
+	@composer create-project --prefer-dist $(REPO) src
 
 init:
 	@echo 'Inicializando projeto em modo DEV...'
@@ -54,8 +59,8 @@ migrate:
 
 test:
 	@echo 'Executando testes'
-	@cd src/ && php ../composer.phar validate --strict
-	@cd src/ && php ../composer.phar update --prefer-dist --no-interaction
+	@cd src/ && composer validate --strict
+	@cd src/ && composer update --prefer-dist --no-interaction
 	@cd src/ && php yii_test migrate --interactive=0
 	@cd src/ && vendor/bin/codecept build
 	@cd src/ && vendor/bin/codecept run
