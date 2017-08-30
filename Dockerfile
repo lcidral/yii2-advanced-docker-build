@@ -1,4 +1,4 @@
-FROM php:7.1.8-fpm-alpine
+FROM php:7.0.22-fpm-alpine
 
 MAINTAINER lcidral <lcidral@gmail.com>
 

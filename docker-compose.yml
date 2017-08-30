@@ -2,7 +2,7 @@ version: '2.1'
 services:
   php:
     container_name: php
-    image: lcidral/yii2.php:7.1.8-fpm-alpine
+    image: lcidral/yii2.php:7.0.22-fpm-alpine
     restart: always
     links:
       - mail
