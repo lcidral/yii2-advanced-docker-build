@@ -12,6 +12,13 @@ docker-build:
 docker-push:
 	@docker push $(NAME):$(VERSION)
 
+composer:
+	@curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
+    composer global require --optimize-autoloader \
+        "hirak/prestissimo" \
+        "fxp/composer-asset-plugin" && \
+    composer global dumpautoload --optimize
+
 docker-release: tag_latest
 	@if ! docker images $(NAME) | awk '{ print $$2 }' | grep -q -F $(VERSION); then echo "$(NAME) version $(VERSION) is not yet built. Please run 'make docker-build'"; false; fi
 	@docker push $(NAME)
@@ -70,5 +77,5 @@ clean:
 	@echo 'Removendo banco de dados'
 	@mysql -u $$APP_MYSQL_USERNAME  --password=$$APP_MYSQL_PASSWORD -h $$APP_MYSQL_HOST -e "DROP DATABASE IF EXISTS $$APP_MYSQL_DBNAME" -vvv
 
-build: clean github-token create config init database migrate test
+build: clean composer github-token create config init database migrate test
 	@echo 'this message not printed by segmentation fault... :o['
