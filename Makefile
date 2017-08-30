@@ -47,7 +47,7 @@ github-token:
 create:
 	@echo 'Criando projeto...'
 	@composer self-update && composer --version
-	@composer global require "fxp/php composer-asset-plugin" "hirak/prestissimo"
+	@composer global require "fxp/composer-asset-plugin" "hirak/prestissimo"
 	@composer create-project --prefer-dist $(REPO) src
 
 init:
