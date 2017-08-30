@@ -68,12 +68,6 @@ RUN apk --update add \
     apk del .phpize-deps && \
     rm -r /tmp/pear/*
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
-    composer global require --optimize-autoloader \
-        "hirak/prestissimo" \
-        "fxp/composer-asset-plugin" && \
-    composer global dumpautoload --optimize
-
 # xdebug
 RUN apk --no-cache add --virtual .build-deps \
         g++ \
