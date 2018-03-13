@@ -1,9 +1,6 @@
-FROM php:7.1.8-fpm-alpine
+FROM php:7.1.14-fpm-alpine
 
 MAINTAINER lcidral <lcidral@gmail.com>
-
-# Configure version constraints
-ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Install system packages & PHP extensions required for Yii 2.0 Framework
 RUN apk --update add \
@@ -31,7 +28,6 @@ RUN apk --update add \
         --with-jpeg-dir=/usr/include/ && \
     docker-php-ext-configure bcmath && \
     docker-php-ext-install \
-        mcrypt \
         zip \
         curl \
         bcmath \
@@ -72,11 +68,21 @@ RUN apk --no-cache add --virtual .build-deps \
         g++ \
         autoconf \
         make && \
-    pecl install xdebug-2.5.5 && \
+    pecl install xdebug-2.6.0 && \
     docker-php-ext-enable xdebug && \
     #apk del .build-deps && \
     rm -r /tmp/pear/*
 
-WORKDIR /var/www/html
+# Install Composer
+ONBUILD ARG GITHUB_OAUTH_TOKEN
+
+ONBUILD RUN set -xe \
+    && curl -sS https://getcomposer.org/installer | php \
+    && mv composer.phar /usr/local/bin/composer \
+    && composer config -g github-oauth.github.com $GITHUB_OAUTH_TOKEN \
+    && composer global require "fxp/composer-asset-plugin" \
+    && composer global require "hirak/prestissimo"
+
+WORKDIR /var/www/html/
 
 EXPOSE 80

@@ -1,5 +1,5 @@
-NAME = lcidral/yii2.php
-VERSION = 7.1.8-fpm-alpine
+NAME = lcidral/dev.php
+VERSION = 7.1.15-fpm-alpine
 REPO = yiisoft/yii2-app-advanced
 
 .PHONY: all build push tag_latest release selenium chromedriver
@@ -16,12 +16,7 @@ docker-push:
 	@docker push $(NAME):$(VERSION)
 
 composer:
-	@php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-	@php -r "if (hash_file('SHA384', 'composer-setup.php') === '669656bab3166a7aff8a7506b8cb2d1c292f042046c5a994c43155c0be6190fa0355160742ab2e1c88d40d5be660b410') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-	@php composer-setup.php
-	@php -r "unlink('composer-setup.php');"
-	@chmod +X composer.phar
-	@mv composer.phar /usr/local/bin/composer
+	@curl -s https://getcomposer.org/installer | php
 
 docker-release: tag_latest
 	@if ! docker images $(NAME) | awk '{ print $$2 }' | grep -q -F $(VERSION); then echo "$(NAME) version $(VERSION) is not yet built. Please run 'make docker-build'"; false; fi
@@ -38,7 +33,7 @@ chromedriver:
 
 database:
 	@echo 'Criando banco de dados...'
-	@mysql -u $$APP_MYSQL_USERNAME --password=$$APP_MYSQL_PASSWORD -h $$APP_MYSQL_HOST -e "CREATE DATABASE IF NOT EXISTS $$APP_MYSQL_DBNAME" -vvv
+	@docker exec -it /mariadb mysql -u $$APP_MYSQL_USERNAME --password=$$APP_MYSQL_PASSWORD -h $$APP_MYSQL_HOST -e "CREATE DATABASE IF NOT EXISTS $$APP_MYSQL_DBNAME" -vvv
 
 github-token:
 	@echo 'Github Token:' $$GITHUB_TOKEN
@@ -79,7 +74,16 @@ clean:
 	@echo 'Limpando pasta SRC/'
 	@rm -rf src/
 	@echo 'Removendo banco de dados'
-	@mysql -u $$APP_MYSQL_USERNAME  --password=$$APP_MYSQL_PASSWORD -h $$APP_MYSQL_HOST -e "DROP DATABASE IF EXISTS $$APP_MYSQL_DBNAME" -vvv
+	@docker exec -it /mariadb mysql -u $$APP_MYSQL_USERNAME  --password=$$APP_MYSQL_PASSWORD -h $$APP_MYSQL_HOST -e "DROP DATABASE IF EXISTS $$APP_MYSQL_DBNAME" -vvv
+
+portainer:
+	@docker run -d --privileged -p 9001:9000 --name portainer -v /var/run/docker.sock:/var/run/docker.sock -v /opt/portainer:/data portainer/portainer
 
 build: clean composer github-token create config init database migrate test
 	@echo 'this message not printed by segmentation fault... :o['
+
+down:
+	@docker-compose down
+
+up:
+	@docker-compose up -d --force-recreate
